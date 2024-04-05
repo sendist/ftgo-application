@@ -4,9 +4,9 @@
 | Test Id | Test Case Name | Precondition | Test Data | Expected Result | Result | Actual Reslut
 
 | TC01 |Membuat order baru dengan data consumer yang sudah terdaftar | 
-Sudah ada data restaurant yang tersimpan,
+- Sudah ada data restaurant yang tersimpan,
 
-Sudah ada data menu pada restaurant yang dipilih,
+- Sudah ada data menu pada restaurant yang dipilih,
 
 Customer telah terdaftar,
 | Create Restaurant :
@@ -43,9 +43,9 @@ Response:
 
 
 | TC02 | Membuat order baru dengan data consumer yang tidak terdaftar | 
-Sudah ada data restaurant yang tersimpan
+- Sudah ada data restaurant yang tersimpan
 
-Sudah ada data menu pada restaurant yang dipilih 
+- Sudah ada data menu pada restaurant yang dipilih 
 | {
   "consumerId": 100,
   "deliveryAddress": {
@@ -77,11 +77,11 @@ Response:
 { "orderId": 2}
 
 | TC03 | Membuat order baru dengan data restaurant sudah terdaftar |
-Sudah ada data restaurant yang tersimpan
+- Sudah ada data restaurant yang tersimpan
 
-Sudah ada data menu pada restaurant yang dipilih 
+- Sudah ada data menu pada restaurant yang dipilih 
 
-Customer telah terdaftar  | 
+- Customer telah terdaftar  | 
 {
   "consumerId": 100,
   "deliveryAddress": {
@@ -148,7 +148,12 @@ Order akan gagal terbuat dan pemanggilan endpoint API akan mengembalikan respons
 Response:
 { "timestamp": "2024-04-05T09:07:55.338+0000", "status": 500, "error": "Internal Server Error", "message": "Restaurant not found with id 100", "path": "/orders"}
 
-| TC05 | Membuat order dengan memilih menu yang tidak terdaftar | Sudah ada data restaurant yang tersimpan, Sudah ada data menu pada restaurant yang dipilih, Customer telah terdaftar  | {
+| TC05 | Membuat order dengan memilih menu yang tidak terdaftar | 
+-Sudah ada data restaurant yang tersimpan 
+
+-Sudah ada data menu pada restaurant yang dipilih
+
+- Customer telah terdaftar  | {
   "consumerId": 9,
   "deliveryAddress": {
     "city": "bandung",
@@ -177,7 +182,12 @@ Order akan gagal terbuat dan pemanggilan endpoint API akan mengembalikan respons
 Response: 
 { "timestamp": "2024-04-05T09:03:38.056+0000", "status": 500, "error": "Internal Server Error", "message": "Invalid menu item id 100", "path": "/orders"}
 
-| TC06 | Membuat order tanpa memilih menu | Sudah ada data restaurant yang tersimpan, Sudah ada data menu pada restaurant yang dipilih, Customer telah terdaftar  | {
+| TC06 | Membuat order tanpa memilih menu | 
+- Sudah ada data restaurant yang tersimpan 
+
+- Sudah ada data menu pada restaurant yang dipilih 
+
+- Customer telah terdaftar  | {
   "consumerId": 9,
   "deliveryAddress": {
     "city": "Bandung",
@@ -199,7 +209,12 @@ Response:
   "orderId": 4
 }
 
-| TC07 | Membuat order dengan memilih minimal satu menu | Sudah ada data restaurant yang tersimpan, Sudah ada data menu pada restaurant yang dipilih, Customer telah terdaftar  | {
+| TC07 | Membuat order dengan memilih minimal satu menu | 
+- Sudah ada data restaurant yang tersimpan
+
+- Sudah ada data menu pada restaurant yang dipilih
+
+- Customer telah terdaftar  | {
   "consumerId": 9,
   "deliveryAddress": {
     "city": "Bandung",
@@ -229,18 +244,39 @@ Response:
   "orderId": 5
 }
 
-| TC08 | POST | /orders/{orderId}/revise | {
-  "revisedOrderLineItems": [
+| TC08 | Membuat order dengan memilih menu dengan kuantitas minimal satu | 
+- Sudah ada data restaurant yang tersimpan
+
+- Sudah ada data menu pada restaurant yang dipilih 
+
+Customer telah terdaftar 
+| {
+  "consumerId": 9,
+  "deliveryAddress": {
+    "city": "Bandung",
+    "state": "Indonesia",
+    "street1": "Ciwaruga",
+    "street2": "Polban",
+    "zip": "40559"
+  },
+  "deliveryTime": "2024-04-04T16:16:00.125Z",
+  "lineItems": [
     {
-      "menuItemId": "002",
-      "quantity": 9
+      "menuItemId": "001",
+      "quantity": 5
     }
-  ]
-} | {
-    "orderId": 3,
-    "state": "APPROVAL_PENDING",
-    "orderTotal": "12.00"
-} | PASS | xref:A-TC08[Attachment TC08]
+  ],
+  "restaurantId": 2
+}
+| Order akan terbuat dan pemanggilan endpoint API akan mengembalikan response berupa orderId dari order yang baru terbuat
+} | PASS | Actual Result :
+Order akan terbuat dan pemanggilan endpoint API akan mengembalikan response berupa orderId dari order yang baru terbuat
+
+
+Response:
+{
+  "orderId": 6
+}
 
 |===
 
