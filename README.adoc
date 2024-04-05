@@ -8,7 +8,7 @@
 
 - Sudah ada data menu pada restaurant yang dipilih,
 
-Customer telah terdaftar,
+- Customer telah terdaftar,
 | Create Restaurant :
 {
   "consumerId": 9,
@@ -249,7 +249,7 @@ Response:
 
 - Sudah ada data menu pada restaurant yang dipilih 
 
-Customer telah terdaftar 
+- Customer telah terdaftar 
 | {
   "consumerId": 9,
   "deliveryAddress": {
