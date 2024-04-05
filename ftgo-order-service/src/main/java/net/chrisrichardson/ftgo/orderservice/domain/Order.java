@@ -147,6 +147,15 @@ public class Order {
 
       case APPROVED:
         LineItemQuantityChange change = orderLineItems.lineItemQuantityChange(orderRevision);
+
+        List<LineItemQuantityChange> changes = revision.getChanges();
+
+        for (LineItemQuantityChange change : changes) {
+            if (change.getNewQuantity() <= 0) {
+                throw new InvalidRevisedOrderQuantityException(change.getMenuItemId(), change.getNewQuantity());
+            }
+        }
+
         if (change.newOrderTotal.isGreaterThanOrEqual(orderMinimum)) {
           throw new OrderMinimumNotMetException();
         }
