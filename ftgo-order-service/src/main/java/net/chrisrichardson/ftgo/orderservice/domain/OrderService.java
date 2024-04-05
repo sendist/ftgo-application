@@ -76,6 +76,10 @@ public class OrderService {
     Consumer consumer = consumerRepository.findById(consumerId)
             .orElseThrow(() -> new ConsumerNotFoundException(consumerId));
 
+    if (lineItems.isEmpty()) {
+        throw new NoOrderItemsException();
+    }
+
     List<OrderLineItem> orderLineItems = makeOrderLineItems(lineItems, restaurant);
 
     ResultWithDomainEvents<Order, OrderDomainEvent> orderAndEvents =
