@@ -545,7 +545,7 @@ public class InvalidOrderQuantityException extends RuntimeException {
 +
 [source,java]
 ----
-"  public ResultWithDomainEvents<LineItemQuantityChange, OrderDomainEvent> revise(OrderRevision orderRevision) {
+public ResultWithDomainEvents<LineItemQuantityChange, OrderDomainEvent> revise(OrderRevision orderRevision) {
     switch (state) {
 
       case APPROVED:
@@ -568,7 +568,7 @@ public class InvalidOrderQuantityException extends RuntimeException {
       default:
         throw new UnsupportedStateTransitionException(state);
     }
-  }"
+  }
 ----
 
         - Pembuatan class InvalidRevisedOrderQuantityException
