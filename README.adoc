@@ -353,18 +353,236 @@ Response:
 
 |===
 
-<<A-TC01, Attachment TC01>>
 
-<<A-TC02, Attachment TC02>>
+Perubahan Kode
+~~~~~~~~~~~~~~~
 
-<<A-TC03, Attachment TC03>>
+. Test case TC2
++
+    * Bug/Masalah: 
+    - Order dapat dilakukan walaupun dengan consumerId yang tidak ada pada sistem.
+    * Perubahan yang dilakukan
+    - Menambahkan kode untuk pengecekan consumerId ke consumerRepository terlebih dahulu sebelum pembuatan order dilakukan.
+    - Menambahkan class Exception untuk menghandle ketika consumerId yang dicantumkan pada saat pembuatan order dilakukan tidak terdaftar pada sistem.
+    * Kode setelah perubahan
+    
+        - Penambahan pengecekan consumerRepository pada class OrderService
++        
+[source,java]
+----
+  public OrderService(SagaInstanceFactory sagaInstanceFactory,
+                      OrderRepository orderRepository,
+                      DomainEventPublisher eventPublisher,
+                      RestaurantRepository restaurantRepository,
+                      ConsumerRepository consumerRepository,
+                      CreateOrderSaga createOrderSaga,
+                      CancelOrderSaga cancelOrderSaga,
+                      ReviseOrderSaga reviseOrderSaga,
+                      OrderDomainEventPublisher orderAggregateEventPublisher,
+                      Optional<MeterRegistry> meterRegistry) {
 
-<<A-TC04, Attachment TC04>>
+    this.sagaInstanceFactory = sagaInstanceFactory;
+    this.orderRepository = orderRepository;
+    this.restaurantRepository = restaurantRepository;
+    this.consumerRepository = consumerRepository;
+    this.createOrderSaga = createOrderSaga;
+    this.cancelOrderSaga = cancelOrderSaga;
+    this.reviseOrderSaga = reviseOrderSaga;
+    this.orderAggregateEventPublisher = orderAggregateEventPublisher;
+    this.meterRegistry = meterRegistry;
+  }
 
-<<A-TC05, Attachment TC05>>
+  @Transactional
+  public Order createOrder(long consumerId, long restaurantId, DeliveryInformation deliveryInformation,
+                           List<MenuItemIdAndQuantity> lineItems) {
+    Restaurant restaurant = restaurantRepository.findById(restaurantId)
+            .orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
 
-<<A-TC06, Attachment TC06>>
+    Consumer consumer = consumerRepository.findById(consumerId)
+            .orElseThrow(() -> new ConsumerNotFoundException(consumerId));
 
-<<A-TC07, Attachment TC07>>
+    List<OrderLineItem> orderLineItems = makeOrderLineItems(lineItems, restaurant);
 
-<<A-TC08, Attachment TC08>>
+    ResultWithDomainEvents<Order, OrderDomainEvent> orderAndEvents =
+            Order.createOrder(consumerId, restaurant, deliveryInformation, orderLineItems);
+
+    Order order = orderAndEvents.result;
+    orderRepository.save(order);
+
+    orderAggregateEventPublisher.publish(order, orderAndEvents.events);
+
+    OrderDetails orderDetails = new OrderDetails(consumerId, restaurantId, orderLineItems, order.getOrderTotal());
+
+    CreateOrderSagaState data = new CreateOrderSagaState(order.getId(), orderDetails);
+    sagaInstanceFactory.create(createOrderSaga, data);
+
+    meterRegistry.ifPresent(mr -> mr.counter("placed_orders").increment());
+
+    return order;
+  }
+----
+
+        - Pembuatan class ConsumerNotFoundException
++
+[source,java]
+----
+package net.chrisrichardson.ftgo.orderservice.domain;
+
+public class ConsumerNotFoundException extends RuntimeException {
+    public ConsumerNotFoundException(long consumerId) {
+        super("Consumer not found with id " + consumerId);
+    }
+}
+
+----
+
+. Test case TC6
++
+    * Bug/Masalah
+    - Order dapat dilakukan walaupun tanpa memilih satupun menu.
+    * Perubahan yang dilakukan
+    - Menambahkan kode untuk pengecekan apakah lineItems kosong atau tidak sebelum melakukan pembuatan order.
+    - Menambahkan class Exception untuk menghandle ketika lineItems (menu yang dipilih) kosong.
+    * Kode setelah perubahan
+    
+        - Penambahan pengecekan isi dari lineItems pada class OrderService
++
+[source,java]
+----
+  @Transactional
+  public Order createOrder(long consumerId, long restaurantId, DeliveryInformation deliveryInformation,
+                           List<MenuItemIdAndQuantity> lineItems) {
+    Restaurant restaurant = restaurantRepository.findById(restaurantId)
+            .orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
+
+    if (lineItems.isEmpty()) {
+        throw new NoOrderItemsException();
+    }
+
+    List<OrderLineItem> orderLineItems = makeOrderLineItems(lineItems, restaurant);
+
+    ResultWithDomainEvents<Order, OrderDomainEvent> orderAndEvents =
+            Order.createOrder(consumerId, restaurant, deliveryInformation, orderLineItems);
+
+    Order order = orderAndEvents.result;
+    orderRepository.save(order);
+
+    orderAggregateEventPublisher.publish(order, orderAndEvents.events);
+
+    OrderDetails orderDetails = new OrderDetails(consumerId, restaurantId, orderLineItems, order.getOrderTotal());
+
+    CreateOrderSagaState data = new CreateOrderSagaState(order.getId(), orderDetails);
+    sagaInstanceFactory.create(createOrderSaga, data);
+
+    meterRegistry.ifPresent(mr -> mr.counter("placed_orders").increment());
+
+    return order;
+  }
+----
+        - Pembuatan class NoOrderItemsException
++
+[source,java]
+----
+package net.chrisrichardson.ftgo.orderservice.domain;
+
+public class NoOrderItemsException extends RuntimeException {
+    public NoOrderItemsException() {
+        super("Order must have at least one item");
+    }
+}
+----
+. Test case TC9
++
+    * Bug/Masalah
+    - Order tetap dapat dibuat walaupun ada kuantitas pada meunu yang kurang dari 1.
+    * Perubahan yang dilakukan
+    - Menambahkan kode untuk melakukan pengecekan terlebih dahulu pada kuantitas tiap menu yang diorder agar tidak kurang dari 1.
+    - Menambahkan class Exception untuk menghandle ketika ada menu yang kuantitasnya kurang dari 1 pada saat pembuatan order dilakukan.
+    * Kode setelah perubahan
+    
+        - Penambahan pengecekan quantity pada lineItems pada class OrderService
++
+[source,java]
+----
+private List<OrderLineItem> makeOrderLineItems(List<MenuItemIdAndQuantity> lineItems, Restaurant restaurant) {
+    return lineItems.stream().map(li -> {
+        if (li.getQuantity() <= 0) {
+            throw new InvalidOrderQuantityException(li.getMenuItemId(), li.getQuantity());
+        }
+        MenuItem om = restaurant.findMenuItem(li.getMenuItemId()).orElseThrow(() -> new InvalidMenuItemIdException(li.getMenuItemId()));
+        return new OrderLineItem(li.getMenuItemId(), om.getName(), om.getPrice(), li.getQuantity());
+    }).collect(toList());
+}
+
+----
+        - Pembuatan class InvalidOrderQuantityException
++
+[source,java]
+----
+public class InvalidOrderQuantityException extends RuntimeException {
+    private String menuItemId; 
+    private int quantity;
+
+    public InvalidOrderQuantityException(String menuItemId, int quantity) {
+        super("Invalid quantity (" + quantity + ") for menu item: " + menuItemId);
+        this.menuItemId = menuItemId;
+        this.quantity = quantity;
+    }
+
+}
+----
+
+. Test case TC11
++
+    * Bug/Masalah
+    - Perubahan/Revise order dengan perubahan kuantitas pada menu menjadi kurang dari 1 dapat dilakukan.
+    * Perubahan yang dilakukan
+    - Menambahkan kode untuk pengecekan perubahan kuantitas pada tiap menu supaya harus lebih dari sama dengan 1.
+    - Menambahkan class Exception untuk menghandle ketika ada perubahan kuantitas pada menu yang kurang dari 1.
+    * Kode setelah perubahan
+    
+        - Penambahan pengecekan quantity baru pada setiap perubahan di LineItemQuantityChange pada class Order
++
+[source,java]
+----
+"  public ResultWithDomainEvents<LineItemQuantityChange, OrderDomainEvent> revise(OrderRevision orderRevision) {
+    switch (state) {
+
+      case APPROVED:
+        LineItemQuantityChange change = orderLineItems.lineItemQuantityChange(orderRevision);
+
+        List<LineItemQuantityChange> changes = revision.getChanges();
+
+        for (LineItemQuantityChange change : changes) {
+            if (change.getNewQuantity() <= 0) {
+                throw new InvalidRevisedOrderQuantityException(change.getMenuItemId(), change.getNewQuantity());
+            }
+        }
+
+        if (change.newOrderTotal.isGreaterThanOrEqual(orderMinimum)) {
+          throw new OrderMinimumNotMetException();
+        }
+        this.state = REVISION_PENDING;
+        return new ResultWithDomainEvents<>(change, singletonList(new OrderRevisionProposed(orderRevision, change.currentOrderTotal, change.newOrderTotal)));
+
+      default:
+        throw new UnsupportedStateTransitionException(state);
+    }
+  }"
+----
+
+        - Pembuatan class InvalidRevisedOrderQuantityException
++
+[source,java]
+----
+public class InvalidRevisedOrderQuantityException extends RuntimeException {
+    private String menuItemId; 
+    private int quantity;
+
+    public InvalidRevisedOrderQuantityException(String menuItemId, int quantity) {
+        super("Invalid revised quantity (" + quantity + ") for menu item: " + menuItemId);
+        this.menuItemId = menuItemId;
+        this.quantity = quantity;
+    }
+}
+----
