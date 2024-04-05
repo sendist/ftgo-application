@@ -47,16 +47,7 @@ Create Restaurant :
   "consumerId": 9
 } | PASS | xref:A-TC03[Attachment TC03]
 
-| TC04 | GET | /consumers/{orderId} | /consumers/9 | {
-  "consumerId": 9,
-  "name": {
-    "firstName": "Rofa",
-    "lastName": "Latimojong"
-  }
-} | PASS | xref:A-TC04[Attachment TC04]
-
-| TC05 | POST | /orders | Create Order :
-{
+| TC04 | Membuat order baru dengan data restaurant yang tidak terdaftar |   Customer telah terdaftar  | {
   "consumerId": 9,
   "deliveryAddress": {
     "city": "bandung",
@@ -72,10 +63,49 @@ Create Restaurant :
       "quantity": 1
     }
   ],
-  "restaurantId": 2
-} | {
-  "orderId": 3
-} | PASS | xref:A-TC05[Attachment TC05]
+  "restaurantId": 100
+} | Expected Result:
+Order akan gagal terbuat dan pemanggilan endpoint API akan mengembalikan response berupa error karena restaurant tidak terdaftar
+
+
+
+Response:
+{ "timestamp": "2024-04-05T09:07:55.338+0000", "status": 500, "error": "Internal Server Error", "message": "Restaurant not found with id 100", "path": "/orders"} | PASS | Actual Result:
+Order akan gagal terbuat dan pemanggilan endpoint API akan mengembalikan response berupa error karena restaurant tidak terdaftar
+
+
+
+Response:
+{ "timestamp": "2024-04-05T09:07:55.338+0000", "status": 500, "error": "Internal Server Error", "message": "Restaurant not found with id 100", "path": "/orders"}
+
+| TC05 | Membuat order dengan memilih menu yang tidak terdaftar | Sudah ada data restaurant yang tersimpan, Sudah ada data menu pada restaurant yang dipilih, Customer telah terdaftar  | {
+  "consumerId": 9,
+  "deliveryAddress": {
+    "city": "bandung",
+    "state": "indonesia",
+    "street1": "ciwaruga",
+    "street2": "polban",
+    "zip": "40559"
+  },
+  "deliveryTime": "2024-04-04T16:16:00.125Z",
+  "lineItems": [
+    {
+      "menuItemId": "100",
+      "quantity": 1
+    }
+  ],
+  "restaurantId": 02
+}| Expected Result:
+Order akan gagal terbuat dan pemanggilan endpoint API akan mengembalikan response berupa error karena menu yang dipilih tidak terdaftar
+
+
+Response: 
+{ "timestamp": "2024-04-05T09:03:38.056+0000", "status": 500, "error": "Internal Server Error", "message": "Invalid menu item id 100", "path": "/orders"}| PASS | Actual Result:
+Order akan gagal terbuat dan pemanggilan endpoint API akan mengembalikan response berupa error karena menu yang dipilih tidak terdaftar
+
+
+Response: 
+{ "timestamp": "2024-04-05T09:03:38.056+0000", "status": 500, "error": "Internal Server Error", "message": "Invalid menu item id 100", "path": "/orders"}
 
 | TC06 | GET | /orders/{orderId} | /orders/3 | {
   "orderId": 3,
