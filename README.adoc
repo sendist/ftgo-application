@@ -1,7 +1,7 @@
 [cols="1,2,2,3,3,2,2"]
 .Test Scenario
 |===
-| Test Id | Method | Endpoint | Test Data | Actual Result | Result | Attachment
+| Test Id | Test Case Name | Precondition | Test Data | Actual Result | Result | Attachment
 
 | TC01 | POST | /restaurant | Create Restaurant :
 {
