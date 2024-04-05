@@ -107,11 +107,27 @@ Order akan gagal terbuat dan pemanggilan endpoint API akan mengembalikan respons
 Response: 
 { "timestamp": "2024-04-05T09:03:38.056+0000", "status": 500, "error": "Internal Server Error", "message": "Invalid menu item id 100", "path": "/orders"}
 
-| TC06 | GET | /orders/{orderId} | /orders/3 | {
-  "orderId": 3,
-  "state": "APPROVED",
-  "orderTotal": "12.000"
-} | PASS | xref:A-TC06[Attachment TC06]
+| TC06 | Membuat order tanpa memilih menu | Sudah ada data restaurant yang tersimpan, Sudah ada data menu pada restaurant yang dipilih, Customer telah terdaftar  | {
+  "consumerId": 9,
+  "deliveryAddress": {
+    "city": "Bandung",
+    "state": "Indonesia",
+    "street1": "Ciwaruga",
+    "street2": "Polban",
+    "zip": "40559"
+  },
+  "deliveryTime": "2024-04-04T16:16:00.125Z",
+  "lineItems": [ ],
+  "restaurantId": 2
+}
+ | Order akan gagal terbuat dan pemanggilan endpoint API akan mengembalikan response berupa error karena tidak ada satupun menu yang terpilih | FAIL | Actual Result :
+Order akan terbuat dan pemanggilan endpoint API akan mengembalikan response berupa orderId dari order yang baru terbuat
+
+
+Response:
+{
+  "orderId": 4
+}
 
 | TC07 | POST | /orders/{orderId}/cancel | /orders/2/cancel | {
     "orderId": 2,
