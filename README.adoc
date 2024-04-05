@@ -1,5 +1,6 @@
 Test Scenario Kelompok 4
 ------------------------
+Link list sheet uji coba:https://docs.google.com/spreadsheets/d/1weHAqknIz9r2k1jKYsd56J_lPUBkKmc-mKpGHXByhcg/edit?usp=sharing
 Pembuatan test scenario, eksekusi test, dan perbaikan kode untuk test case yang fail pada api:
 
 * Create Order
