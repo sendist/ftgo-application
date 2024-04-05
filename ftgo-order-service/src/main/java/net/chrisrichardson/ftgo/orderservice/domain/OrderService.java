@@ -49,6 +49,7 @@ public class OrderService {
                       OrderRepository orderRepository,
                       DomainEventPublisher eventPublisher,
                       RestaurantRepository restaurantRepository,
+                      ConsumerRepository consumerRepository,
                       CreateOrderSaga createOrderSaga,
                       CancelOrderSaga cancelOrderSaga,
                       ReviseOrderSaga reviseOrderSaga,
@@ -58,6 +59,7 @@ public class OrderService {
     this.sagaInstanceFactory = sagaInstanceFactory;
     this.orderRepository = orderRepository;
     this.restaurantRepository = restaurantRepository;
+    this.consumerRepository = consumerRepository;
     this.createOrderSaga = createOrderSaga;
     this.cancelOrderSaga = cancelOrderSaga;
     this.reviseOrderSaga = reviseOrderSaga;
@@ -70,6 +72,9 @@ public class OrderService {
                            List<MenuItemIdAndQuantity> lineItems) {
     Restaurant restaurant = restaurantRepository.findById(restaurantId)
             .orElseThrow(() -> new RestaurantNotFoundException(restaurantId));
+
+    Consumer consumer = consumerRepository.findById(consumerId)
+            .orElseThrow(() -> new ConsumerNotFoundException(consumerId));
 
     List<OrderLineItem> orderLineItems = makeOrderLineItems(lineItems, restaurant);
 
