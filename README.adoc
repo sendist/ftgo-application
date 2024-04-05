@@ -3,7 +3,11 @@
 |===
 | Test Id | Test Case Name | Precondition | Test Data | Expected Result | Result | Actual Reslut
 
-| TC01 | POST | /restaurant | Create Restaurant :
+| TC01 | POST | /restaurant | 
+Sudah ada data restaurant yang tersimpan.
+Sudah ada data menu pada restaurant yang dipilih.
+Customer telah terdaftar. |
+Create Restaurant :
 {
   "address": {
     "city": "bandung",
