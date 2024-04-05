@@ -4,9 +4,9 @@
 | Test Id | Test Case Name | Precondition | Test Data | Expected Result | Result | Actual Reslut
 
 | TC01 | POST | 
-| * Sudah ada data restaurant yang tersimpan.
-| * Sudah ada data menu pada restaurant yang dipilih.
-| * Customer telah terdaftar.
+* Sudah ada data restaurant yang tersimpan ,
+* Sudah ada data menu pada restaurant yang dipilih ,
+* Customer telah terdaftar ,
 | Create Restaurant :
 Create Restaurant :
 {
