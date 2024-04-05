@@ -3,49 +3,119 @@
 |===
 | Test Id | Test Case Name | Precondition | Test Data | Expected Result | Result | Actual Reslut
 
-| TC01 | POST | 
-Sudah ada data restaurant yang tersimpan
-Sudah ada data menu pada restaurant yang dipilih
-Customer telah terdaftar
+| TC01 |Membuat order baru dengan data consumer yang sudah terdaftar | 
+Sudah ada data restaurant yang tersimpan,
+
+Sudah ada data menu pada restaurant yang dipilih,
+
+Customer telah terdaftar,
 | Create Restaurant :
-Create Restaurant :
 {
-  "address": {
+  "consumerId": 9,
+  "deliveryAddress": {
     "city": "bandung",
     "state": "indonesia",
-    "street1": "kopo",
-    "street2": "buah batu",
-    "zip": "42161"
+    "street1": "ciwaruga",
+    "street2": "polban",
+    "zip": "40559"
   },
-  "menu": {
-    "menuItems": [
-      {
-        "id": "001",
-        "name": "Spaghetti Bolognese",
-        "price": "12.000"
-        }
-       ]
-      },
-  "name": "Kantin FTGO"
-} | {
-  "Id": 2
-} | PASS | xref:A-TC01[Attachment TC01]
+  "deliveryTime": "2024-04-04T16:16:00.125Z",
+  "lineItems": [
+    {
+      "menuItemId": "001",
+      "quantity": 1
+    }
+  ],
+  "restaurantId": 2
+}
+} | Expected Result:
+Order akan terbuat dan pemanggilan endpoint API akan mengembalikan response berupa orderId dari order yang baru terbuat
 
 
-| TC02 | GET | /restaurants/{orderId} | /restarants/2 | {
-  "id": 2,
-  "name": "Kantin FTGO"
-} | PASS | xref:A-TC02[Attachment TC02]
+Response: 
+{ "orderId": 1}
+} | PASS | Actual Result:
+Order akan terbuat dan pemanggilan endpoint API akan mengembalikan response berupa orderId dari order yang baru terbuat
 
-| TC03 | POST | /consumers | Create Consumers:
+
+Response:
+{ "orderId": 1}
+
+
+| TC02 | Membuat order baru dengan data consumer yang tidak terdaftar | 
+Sudah ada data restaurant yang tersimpan
+
+Sudah ada data menu pada restaurant yang dipilih 
+| {
+  "consumerId": 100,
+  "deliveryAddress": {
+    "city": "bandung",
+    "state": "indonesia",
+    "street1": "ciwaruga",
+    "street2": "polban",
+    "zip": "40559"
+  },
+  "deliveryTime": "2024-04-04T16:16:00.125Z",
+  "lineItems": [
+    {
+      "menuItemId": "001",
+      "quantity": 1
+    }
+  ],
+  "restaurantId": 2
+}| Expected Result:
+Order akan gagal terbuat dan pemanggilan endpoint API akan mengembalikan response berupa error karena consumer tidak terdaftar
+
+
+Response:
+{ ""timestamp"": ""2024-04-05T09:07:55.338+0000"", ""status"": 500, ""error"": ""Internal Server Error"", ""message"": ""Consumer not found with id 100"", ""path"": ""/orders""}
+} | FAIL | Actual Result:
+Order berhasil terbuat dan pemanggilan endpoint API akan mengembalikan response berupa orderId dari order yang baru terbuat
+
+
+Response: 
+{ "orderId": 2}
+
+| TC03 | Membuat order baru dengan data restaurant sudah terdaftar |
+Sudah ada data restaurant yang tersimpan
+
+Sudah ada data menu pada restaurant yang dipilih 
+
+Customer telah terdaftar  | 
 {
-  "name": {
-    "firstName": "Rofa",
-    "lastName": "Latimojong"
-  }
-} | {
-  "consumerId": 9
-} | PASS | xref:A-TC03[Attachment TC03]
+  "consumerId": 100,
+  "deliveryAddress": {
+    "city": "bandung",
+    "state": "indonesia",
+    "street1": "ciwaruga",
+    "street2": "polban",
+    "zip": "40559"
+  },
+  "deliveryTime": "2024-04-04T16:16:00.125Z",
+  "lineItems": [
+    {
+      "menuItemId": "001",
+      "quantity": 1
+    }
+  ],
+  "restaurantId": 2
+}
+} | Expected Result:
+Order akan terbuat dan pemanggilan endpoint API akan mengembalikan response berupa orderId dari order yang baru terbuat
+
+
+Response:
+{
+  "orderId": 3
+}
+} | PASS | Actual Result:
+Order akan terbuat dan pemanggilan endpoint API akan mengembalikan response berupa orderId dari order yang baru terbuat
+
+
+Response:
+{
+  "orderId": 3
+}
 
 | TC04 | Membuat order baru dengan data restaurant yang tidak terdaftar |   Customer telah terdaftar  | {
   "consumerId": 9,
