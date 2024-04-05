@@ -103,6 +103,9 @@ public class OrderService {
 
   private List<OrderLineItem> makeOrderLineItems(List<MenuItemIdAndQuantity> lineItems, Restaurant restaurant) {
     return lineItems.stream().map(li -> {
+        if (li.getQuantity() <= 0) {
+            throw new InvalidOrderQuantityException(li.getMenuItemId(), li.getQuantity());
+        }
       MenuItem om = restaurant.findMenuItem(li.getMenuItemId()).orElseThrow(() -> new InvalidMenuItemIdException(li.getMenuItemId()));
       return new OrderLineItem(li.getMenuItemId(), om.getName(), om.getPrice(), li.getQuantity());
     }).collect(toList());
