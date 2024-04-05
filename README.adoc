@@ -1,3 +1,11 @@
+Test Scenario Kelompok 4
+------------------------
+Pembuatan test scenario, eksekusi test, dan perbaikan kode untuk test case yang fail pada api:
+
+* Create Order
+* Cancel Order
+* Revise Order
+
 [cols="1,2,2,3,3,2,2"]
 .Test Scenario
 |===
@@ -332,7 +340,7 @@ Response:
 }
 
 
-| TC11 | MMengubah order dengan mengganti dengan kuantitas kurang dari satu | Sudah ada Order yang tersimpan | {
+| TC11 | Mengubah order dengan mengganti dengan kuantitas kurang dari satu | Sudah ada Order yang tersimpan | {
   "revisedOrderLineItems": [
     {
       "menuItemId": "001",
@@ -349,6 +357,57 @@ Response:
   "state": "APPROVED",
   "orderTotal": "-28000.00"
 }
+
+| TC12 | Melakukan pembatalan order | Sudah ada Order yang tersimpan | {
+  "consumerId": 9,
+  "deliveryAddress": {
+    "city": "Bandung",
+    "state": "Indonesia",
+    "street1": "Ciwaruga",
+    "street2": "Polban",
+    "zip": "40559"
+  },
+  "deliveryTime": "2024-04-04T16:16:00.125Z",
+  "lineItems": [
+    {
+      "menuItemId": "001",
+      "quantity": 0
+    }
+  ],
+  "restaurantId": 2
+} | Order dibatalkan dan status order akan diubah menjadi CANCELLED, tetapi status ini dapat terlihat setelah melakukan calcel order, lalu get order dengan id order yg dihapus.
+
+Response pembatalan:
+{
+    "orderId": 2,
+    "state": "APPROVED",
+    "orderTotal": "12.00"
+}
+
+Response get order dengan id order yg dihapus:
+{
+    "orderId": 2,
+    "state": "CALCELLED",
+    "orderTotal": "12.00"
+} | PASS | Actual Result: 
+
+Order dibatalkan dan response dari api adalah sebagai berikut:
+
+Response pembatalan:
+{
+    "orderId": 2,
+    "state": "APPROVED",
+    "orderTotal": "12.00"
+}
+
+Response get order dengan id order yg dihapus:
+{
+    "orderId": 2,
+    "state": "CALCELLED",
+    "orderTotal": "12.00"
+}
+
+
 
 
 | TC12 | Melakukan Pembatan Order | Sudah ada Order yang tersimpan | {
