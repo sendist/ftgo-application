@@ -351,6 +351,41 @@ Response:
 }
 
 
+| TC12 | Melakukan Pembatan Order | Sudah ada Order yang tersimpan | {
+  "consumerId": 9,
+  "deliveryAddress": {
+    "city": "Bandung",
+    "state": "Indonesia",
+    "street1": "Ciwaruga",
+    "street2": "Polban",
+    "zip": "40559"
+  },
+  "deliveryTime": "2024-04-04T16:16:00.125Z",
+  "lineItems": [
+    {
+      "menuItemId": "001",
+      "quantity": 0
+    }
+  ],
+  "restaurantId": 2
+} | Order akan ter-cancel dan pemanggilan endpoint API akan mengembalikan response berupa perubahan yang menampilkan orderId, state, dan orderTotal
+
+
+Response : {
+    "orderId": 2,
+    "state": "APPROVED",
+    "orderTotal": "12.00"
+} | PASS | Actual Result:
+Order akan ter-cancel dan pemanggilan endpoint API akan mengembalikan response berupa perubahan yang menampilkan orderId, state, dan orderTotal. 
+
+
+Response:
+{
+  "orderId": 2,
+  "state": "APPROVED",
+  "orderTotal": "12.00"
+}
+
 |===
 
 
