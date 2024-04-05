@@ -129,11 +129,35 @@ Response:
   "orderId": 4
 }
 
-| TC07 | POST | /orders/{orderId}/cancel | /orders/2/cancel | {
-    "orderId": 2,
-    "state": "APPROVED",
-    "orderTotal": "12.00"
-} | PASS | xref:A-TC07[Attachment TC07]
+| TC07 | Membuat order dengan memilih minimal satu menu | Sudah ada data restaurant yang tersimpan, Sudah ada data menu pada restaurant yang dipilih, Customer telah terdaftar  | {
+  "consumerId": 9,
+  "deliveryAddress": {
+    "city": "Bandung",
+    "state": "Indonesia",
+    "street1": "Ciwaruga",
+    "street2": "Polban",
+    "zip": "40559"
+  },
+  "deliveryTime": "2024-04-04T16:16:00.125Z",
+  "lineItems": [
+    {
+      "menuItemId": "001", 
+      "quantity": 2
+    },
+    {
+      "menuItemId": "002",
+      "quantity": 1
+    }
+  ],
+  "restaurantId": 2
+} | Order akan terbuat dan pemanggilan endpoint API akan mengembalikan response berupa orderId dari order yang baru terbuat | PASS | Actual Result :
+Order akan terbuat dan pemanggilan endpoint API akan mengembalikan response berupa orderId dari order yang baru terbuat
+
+
+Response:
+{
+  "orderId": 5
+}
 
 | TC08 | POST | /orders/{orderId}/revise | {
   "revisedOrderLineItems": [
